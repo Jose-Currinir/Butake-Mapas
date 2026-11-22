@@ -1,0 +1,10 @@
+# Copia a prod.tfvars (no va a git).
+cuenta_id   = "<cuenta>"
+responsable = "jose@butake.cl"
+
+# Etiquetas de las imágenes en ECR. Vacías: esas funciones aún no se crean.
+imagen_teselar = ""
+imagen_dibujo  = ""
+
+actualizar_semanal = false
+presupuesto_usd    = 10

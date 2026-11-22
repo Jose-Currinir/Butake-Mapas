@@ -1,0 +1,28 @@
+{
+  "name": "butake-mapas-funciones",
+  "private": true,
+  "type": "module",
+  "description": "Funciones Lambda de Butake-Mapas en AWS: mosaicos, capas, teselar e imagen.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "build": "node empaquetar.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.1175.0",
+    "@aws-sdk/client-geo-routes": "3.1175.0",
+    "@aws-sdk/client-s3": "3.1175.0",
+    "@aws-sdk/client-ssm": "3.1175.0",
+    "@aws-sdk/lib-dynamodb": "3.1175.0",
+    "@aws-sdk/s3-presigned-post": "3.1175.0",
+    "pmtiles": "4.5.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

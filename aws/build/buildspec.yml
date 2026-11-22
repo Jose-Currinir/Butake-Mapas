@@ -1,0 +1,13 @@
+# CodeBuild: reconstruye el mapa base de Chile y lo publica en S3 (scripts/aws/construir-base.sh).
+# Fuente: el .zip del repo que sube scripts/aws/subir-receta.sh a s3://$BUCKET/receta/receta.zip.
+# Variables (las fija Terraform): BUCKET, DOMINIO, DISTRIBUCION.
+version: 0.2
+phases:
+  install:
+    commands:
+      - command -v sqlite3 >/dev/null || (dnf install -y sqlite >/dev/null 2>&1 || apt-get install -y sqlite3 >/dev/null)
+  build:
+    commands:
+      - aws s3 cp "s3://$BUCKET/receta/receta.zip" /tmp/receta.zip --only-show-errors
+      - mkdir -p /tmp/receta && cd /tmp/receta && unzip -q /tmp/receta.zip
+      - cd /tmp/receta && TRABAJO=/tmp/construir PLANETILER_MEMORY=6g bash scripts/aws/construir-base.sh

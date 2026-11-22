@@ -1,0 +1,7 @@
+# Copia a estado.hcl (no va a git) con el ID de la cuenta butake-mapas-prod.
+bucket       = "butake-mapas-prod-tfstate-<cuenta>"
+key          = "mapas/prod/sin-servidor.tfstate"
+region       = "us-east-1"
+encrypt      = true
+use_lockfile = true
+profile      = "butake-mapas-admin"

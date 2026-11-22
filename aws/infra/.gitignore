@@ -1,0 +1,6 @@
+.terraform/
+.dist/
+estado.hcl
+*.tfvars
+!*.tfvars.example
+*.tfstate*

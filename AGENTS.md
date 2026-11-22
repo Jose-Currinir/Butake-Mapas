@@ -63,6 +63,10 @@ Variables documentadas en `docs/operacion.md` (sección Configuración).
 
 ## 5. Estado y pendientes
 
+- **Versión sin servidor en AWS** (`aws/`, ver `aws/README.md`): S3 + CloudFront + Lambdas
+  (mosaicos desde PMTiles, API de capas, teselar con tippecanoe, imagen para PDF), rutas con
+  Amazon Location y CodeBuild para reconstruir el mapa. Reemplaza a TileServer y GraphHopper en
+  una EC2. Pruebas: `cd aws/funciones && npm test`; Terraform: `terraform validate` en `aws/infra`.
 - Listo: stack Compose, validaciones, cinco estilos, perfiles de routing con zonas a evitar.
 - Sin tests automáticos ni CI: la validación es `smoke.sh` y revisión manual.
 - Pendientes de infraestructura (caché en Cloudflare, raster 500, GraphHopper sin auth):
