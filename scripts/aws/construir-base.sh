@@ -35,11 +35,20 @@ MAPS_BACKGROUND_TILESET=natural_earth.mbtiles
 ENV
 
 if [[ "${SOLO_ESTILOS:-0}" != "1" ]]; then
-  set +e
-  bash "$RAIZ/scripts/fetch-pbf.sh" "$ENV_FILE" --force
-  codigo=$?
-  set -e
-  (( codigo == 0 || codigo == 3 )) || exit "$codigo"
+  # Geofabrik a veces rechaza conexiones desde rangos de AWS (CodeBuild): si falla, el espejo de
+  # openstreetmap.fr publica el mismo extracto con su .md5.
+  bajar() {
+    set +e
+    bash "$RAIZ/scripts/fetch-pbf.sh" "$ENV_FILE" --force
+    local codigo=$?
+    set -e
+    (( codigo == 0 || codigo == 3 ))
+  }
+  if ! bajar; then
+    echo "Geofabrik no respondió; uso el espejo de openstreetmap.fr."
+    echo "OSM_EXTRACT_URL=https://download.openstreetmap.fr/extracts/south-america/chile.osm.pbf" >>"$ENV_FILE"
+    bajar
+  fi
   pbf_dir="$TRABAJO/data/countries/chile"
   [[ -f "$pbf_dir/map.osm.pbf.new" ]] && mv "$pbf_dir/map.osm.pbf.new" "$pbf_dir/map.osm.pbf"
 
