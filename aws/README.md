@@ -130,11 +130,31 @@ No hay nada encendido que apagar: si nadie pide mapas, el costo es el del almace
 - Desactivar las claves de API (`clave.mjs quitar`).
 - Dejar `actualizar_semanal = false`.
 
+## Estado (2026-11-22)
+
+| Pieza | Estado |
+|---|---|
+| Cuenta `butake-mapas-prod` (678357652266), perfil `butake-mapas-admin` | ✓ |
+| Terraform `aws/infra` aplicado (estado en `butake-mapas-prod-tfstate-678357652266`) | ✓ |
+| `mapas.butake.cl` (CloudFront `E2PVO3O0C5QZ2T`) y `api-mapas.butake.cl` (DNS en Cloudflare, nube gris) | ✓ |
+| Visor en la raíz (`aws/visor/index.html`) | ✓ |
+| Mapa base de Chile (`base/*.pmtiles`, CodeBuild `butake-mapas-prod-base`) | ✓ |
+| Estilos `cl-light` / `cl-dark`, fuentes y sprite | ✓ |
+| API de capas: catálogo, subida firmada, acceso del día, estilo con capas, imágenes firmadas, rutas | ✓ desplegada |
+| Función `teselar` (convierte la capa subida) | falta su imagen en ECR: hasta entonces una capa queda en `esperando` |
+| Función `imagen` (PNG para PDF) | falta su imagen en ECR |
+| Clave de API para un producto (`herramientas/clave.mjs`) | ninguna creada |
+| Tope de Lambdas a la vez | 10 (cuenta nueva); pedido 1000, caso abierto. Con la caché fría algunos mosaicos dan 429 |
+| Actualización semanal | apagada (`actualizar_semanal = false`) |
+
 ## Pendiente
 
-- No se ha aplicado en AWS: falta la cuenta (paso 1).
-- La Lambda de imagen se probó dibujando en su contenedor; con estilos reales necesita la
-  distribución arriba (lee fuentes y mosaicos de `mapas.butake.cl`).
-- Clientes: apuntar Móvil web (`PUBLIC_MAP_STYLE`) y Android (`flota.mapStyleUrl`, hoy
-  `maps.butake.cl/…/urban-gray`, que no existe) a `https://mapas.butake.cl/styles/cl-light/style.json`.
-- Retirar TileServer y GraphHopper cuando los clientes estén migrados.
+1. Imágenes de `teselar` e `imagen` en ECR y sus etiquetas en `prod.tfvars` (paso 7 de «Primera vez»).
+2. Clave de API para Móvil y guardarla en su SSM.
+3. Clientes: Móvil web (`PUBLIC_MAP_STYLE`) y Android (`flota.mapStyleUrl`, hoy
+   `maps.butake.cl/…/urban-gray`, que no existe) a `https://mapas.butake.cl/styles/cl-light/style.json`.
+4. Capas en el Web Kit (`web-core`): pedir el estilo con capas al servidor del producto.
+5. Retirar TileServer, GraphHopper y el túnel de `mapa.butake.cl` / `ruta.butake.cl` cuando los clientes estén migrados.
+
+Geofabrik a veces rechaza descargas desde AWS: `construir-base.sh` usa entonces el espejo de
+openstreetmap.fr.
