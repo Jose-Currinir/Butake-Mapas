@@ -223,7 +223,7 @@ resource "aws_lambda_function" "imagen" {
   memory_size   = 2048
   timeout       = 30
   # Pocas a la vez: cada imagen cuesta cómputo; una ola de pedidos espera en vez de multiplicar el gasto.
-  reserved_concurrent_executions = 5
+  reserved_concurrent_executions = var.imagen_a_la_vez
   environment {
     variables = { BUCKET = aws_s3_bucket.datos.id, DOMINIO = var.dominio, PARAMETRO_SECRETO = local.parametro_secreto }
   }

@@ -72,13 +72,13 @@ nunca ve la clave. Una clave = una cuenta-cliente (por ejemplo `movil`).
 
 | Pedido | Respuesta |
 |---|---|
-| `POST /capas {nombre}` | `id` y un POST firmado a S3 (15 min, hasta 50 MB, `application/geo+json`) |
-| `GET /capas`, `GET /capas/{id}` | estado: `esperando` → `procesando` → `lista` o `error` (con motivo) |
-| `DELETE /capas/{id}` | la archiva: deja de servirse, el archivo queda (historial) |
-| `POST /acceso` | token del día y plantilla de URL de mosaicos de la cuenta |
-| `GET /estilos/{cl-light\|cl-dark}?capas=a,b` | style.json listo para MapLibre, con las capas encima |
-| `POST /imagenes {estilo, centro, zoom, ancho, alto, marcas?, linea?}` | URL firmada del PNG (1 hora) |
-| `POST /rutas {origen, destino, paradas?, salida?, evitarZonas?}` | distancia, duración y línea, con tráfico |
+| `POST /v1/capas {nombre}` | `id` y un POST firmado a S3 (15 min, hasta 50 MB, `application/geo+json`) |
+| `GET /v1/capas`, `GET /v1/capas/{id}` | estado: `esperando` → `procesando` → `lista` o `error` (con motivo) |
+| `DELETE /v1/capas/{id}` | la archiva: deja de servirse, el archivo queda (historial) |
+| `POST /v1/acceso` | token del día y plantilla de URL de mosaicos de la cuenta |
+| `GET /v1/estilos/{cl-light\|cl-dark}?capas=a,b` | style.json listo para MapLibre, con las capas encima |
+| `POST /v1/imagenes {estilo, centro, zoom, ancho, alto, marcas?, linea?}` | URL firmada del PNG (1 hora) |
+| `POST /v1/rutas {origen, destino, paradas?, salida?, evitarZonas?}` | distancia, duración y línea, con tráfico |
 
 Las zonas a evitar son las de `data/car_avoid.json` (las mismas de GraphHopper).
 
@@ -141,20 +141,19 @@ No hay nada encendido que apagar: si nadie pide mapas, el costo es el del almace
 | Mapa base de Chile (`base/*.pmtiles`, CodeBuild `butake-mapas-prod-base`) | ✓ |
 | Estilos `cl-light` / `cl-dark`, fuentes y sprite | ✓ |
 | API de capas: catálogo, subida firmada, acceso del día, estilo con capas, imágenes firmadas, rutas | ✓ desplegada |
-| Función `teselar` (convierte la capa subida) | falta su imagen en ECR: hasta entonces una capa queda en `esperando` |
-| Función `imagen` (PNG para PDF) | falta su imagen en ECR |
-| Clave de API para un producto (`herramientas/clave.mjs`) | ninguna creada |
-| Tope de Lambdas a la vez | 10 (cuenta nueva); pedido 1000, caso abierto. Con la caché fría algunos mosaicos dan 429 |
+| Función `teselar` (convierte la capa subida) | ✓ desplegada (imagen `6de1917`); probar con `scripts/aws/probar-capa.sh` |
+| Función `imagen` (PNG para PDF) | ✓ probada: ~5 s en caliente, ~50 s la primera vez |
+| Clave de API | Móvil: en `/butake/movil/prod/api/MAPAS_CLAVE` (SSM de Móvil) |
+| Tope de Lambdas a la vez | 10 (cuenta nueva); pedido 1000, caso abierto. Con la caché fría algunos mosaicos dan 429. Mientras, `imagen_a_la_vez = -1` (sin reserva) |
 | Actualización semanal | apagada (`actualizar_semanal = false`) |
 
 ## Pendiente
 
-1. Imágenes de `teselar` e `imagen` en ECR y sus etiquetas en `prod.tfvars` (paso 7 de «Primera vez»).
-2. Clave de API para Móvil y guardarla en su SSM.
-3. Clientes: Móvil web (`PUBLIC_MAP_STYLE`) y Android (`flota.mapStyleUrl`, hoy
+1. Cuando AWS apruebe el tope: `imagen_a_la_vez = 5` y `terraform apply`.
+2. Clientes: Móvil web (`PUBLIC_MAP_STYLE`) y Android (`flota.mapStyleUrl`, hoy
    `maps.butake.cl/…/urban-gray`, que no existe) a `https://mapas.butake.cl/styles/cl-light/style.json`.
-4. Capas en el Web Kit (`web-core`): pedir el estilo con capas al servidor del producto.
-5. Retirar TileServer, GraphHopper y el túnel de `mapa.butake.cl` / `ruta.butake.cl` cuando los clientes estén migrados.
+3. Capas en el Web Kit (`web-core`): pedir el estilo con capas al servidor del producto.
+4. Retirar TileServer, GraphHopper y el túnel de `mapa.butake.cl` / `ruta.butake.cl` cuando los clientes estén migrados.
 
 Geofabrik a veces rechaza descargas desde AWS: `construir-base.sh` usa entonces el espejo de
 openstreetmap.fr.

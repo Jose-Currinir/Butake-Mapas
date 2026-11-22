@@ -57,6 +57,12 @@ variable "imagen_dibujo" {
   default     = ""
 }
 
+variable "imagen_a_la_vez" {
+  description = "Funciones imagen reservadas a la vez. -1: sin reserva (cuenta nueva con tope 10, AWS exige dejar 10 libres)."
+  type        = number
+  default     = 5
+}
+
 variable "actualizar_semanal" {
   description = "Reconstruir el mapa base cada domingo con CodeBuild (cuesta centavos por semana)."
   type        = bool
