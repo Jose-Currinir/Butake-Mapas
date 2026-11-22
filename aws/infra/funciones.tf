@@ -20,6 +20,8 @@ locals {
   roles = {
     mosaicos = [
       { actions = ["s3:GetObject"], resources = ["${aws_s3_bucket.datos.arn}/base/*", "${aws_s3_bucket.datos.arn}/capas/*"] },
+      # Con ListBucket, un archivo que falta responde 404 (NoSuchKey) y no 502 (AccessDenied).
+      { actions = ["s3:ListBucket"], resources = [aws_s3_bucket.datos.arn] },
       { actions = ["ssm:GetParameter"], resources = [local.secreto_arn] },
     ]
     capas = [
