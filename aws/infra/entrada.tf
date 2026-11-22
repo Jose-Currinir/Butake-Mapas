@@ -63,10 +63,25 @@ resource "aws_cloudfront_cache_policy" "imagen" {
   }
 }
 
+# CORS propio: con la SimpleCORS administrada algunas respuestas llegaban al navegador sin
+# Access-Control-Allow-Origin y MapLibre no podía leer el estilo desde otro dominio.
+# origin_override hace que CloudFront siempre ponga las cabeceras.
+resource "aws_cloudfront_response_headers_policy" "cors" {
+  name = "${local.p}-cors"
+  cors_config {
+    access_control_allow_credentials = false
+    access_control_allow_headers { items = ["*"] }
+    access_control_allow_methods { items = ["GET", "HEAD", "OPTIONS"] }
+    access_control_allow_origins { items = ["*"] }
+    access_control_max_age_sec = 86400
+    origin_override            = true
+  }
+}
+
 locals {
   # Políticas administradas de AWS.
   cache_optimizada     = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingOptimized
-  cors_simple          = "60669652-455b-4ae9-85a4-c4c02393f86c" # SimpleCORS
+  cors_simple          = aws_cloudfront_response_headers_policy.cors.id
   todo_menos_host      = "b689b0a8-53d0-40ab-baf2-68738e2966ac" # AllViewerExceptHostHeader
   dominio_url_mosaicos = trimsuffix(trimprefix(aws_lambda_function_url.mosaicos.function_url, "https://"), "/")
   dominio_url_imagen   = length(aws_lambda_function_url.imagen) > 0 ? trimsuffix(trimprefix(aws_lambda_function_url.imagen[0].function_url, "https://"), "/") : null
