@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Butake Mapas</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css" crossorigin="anonymous">
+  <style>
+    html, body, #mapa { margin: 0; height: 100%; font: 14px/1.4 system-ui, sans-serif; }
+    .panel { position: absolute; top: 12px; left: 12px; z-index: 1; background: #fff; color: #1b1f1d;
+      border-radius: 8px; padding: 10px 12px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+    .panel h1 { font-size: 15px; margin: 0 0 6px; }
+    .panel button { font: inherit; padding: 4px 10px; margin-right: 4px; border: 1px solid #c9d1cc; border-radius: 6px; background: #f4f7f5; cursor: pointer; }
+    .panel button[aria-pressed="true"] { background: #1f7a4d; border-color: #1f7a4d; color: #fff; }
+    .panel code { font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Butake Mapas</h1>
+    <button type="button" data-estilo="cl-light" aria-pressed="true">Claro</button>
+    <button type="button" data-estilo="cl-dark" aria-pressed="false">Oscuro</button>
+    <p>Estilo: <code id="url"></code></p>
+  </div>
+  <div id="mapa"></div>
+  <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js" crossorigin="anonymous"></script>
+  <script>
+    const url = (e) => `${location.origin}/styles/${e}/style.json`
+    const mapa = new maplibregl.Map({ container: 'mapa', style: url('cl-light'), center: [-70.65, -33.44], zoom: 11, hash: true })
+    mapa.addControl(new maplibregl.NavigationControl())
+    document.getElementById('url').textContent = url('cl-light')
+    for (const b of document.querySelectorAll('[data-estilo]')) {
+      b.addEventListener('click', () => {
+        mapa.setStyle(url(b.dataset.estilo))
+        document.getElementById('url').textContent = url(b.dataset.estilo)
+        for (const o of document.querySelectorAll('[data-estilo]')) o.setAttribute('aria-pressed', String(o === b))
+      })
+    }
+  </script>
+</body>
+</html>

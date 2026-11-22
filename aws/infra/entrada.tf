@@ -78,7 +78,9 @@ resource "aws_cloudfront_distribution" "mapas" {
   aliases         = [var.dominio]
   http_version    = "http2and3"
   is_ipv6_enabled = true
-  price_class     = "PriceClass_100"
+  # La raíz muestra un visor del mapa (aws/visor/index.html); sin esto S3 responde AccessDenied.
+  default_root_object = "index.html"
+  price_class         = "PriceClass_100"
 
   origin {
     origin_id                = "s3"

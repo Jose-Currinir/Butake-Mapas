@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "datos" {
   statement {
     sid       = "CloudFrontLeeArchivosFijos"
     actions   = ["s3:GetObject"]
-    resources = [for p in ["styles", "fonts", "sprites"] : "${aws_s3_bucket.datos.arn}/${p}/*"]
+    resources = concat([for p in ["styles", "fonts", "sprites"] : "${aws_s3_bucket.datos.arn}/${p}/*"], ["${aws_s3_bucket.datos.arn}/index.html"])
     principals {
       type        = "Service"
       identifiers = ["cloudfront.amazonaws.com"]
